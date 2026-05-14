@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434655",
+                    "on-primary-fixed": "#00174b",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#006c49",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#00714d",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-container-low": "#f3f4f5",
+                    "surface": "#f8f9fa",
+                    "surface-variant": "#e1e3e4",
+                    "on-primary-container": "#eeefff",
+                    "on-secondary-fixed": "#002113",
+                    "error-container": "#ffdad6",
+                    "on-background": "#191c1d",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#6ffbbe",
+                    "inverse-surface": "#2e3132",
+                    "surface-bright": "#f8f9fa",
+                    "background": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-tertiary-fixed": "#360f00",
+                    "surface-container": "#edeeef",
+                    "primary-fixed": "#dbe1ff",
+                    "primary-container": "#2563eb",
+                    "secondary-container": "#6cf8bb",
+                    "on-secondary-fixed-variant": "#005236",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary-fixed-dim": "#4edea3",
+                    "primary": "#004ac6",
+                    "on-tertiary-container": "#ffede6",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-container": "#bc4800",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "inverse-primary": "#b4c5ff",
+                    "on-surface": "#191c1d",
+                    "tertiary": "#943700",
+                    "outline-variant": "#c3c6d7",
+                    "outline": "#737686",
+                    "surface-tint": "#0053db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base-unit": "4px",
+                    "gutter": "16px",
+                    "margin-desktop": "24px",
+                    "touch-target": "44px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "display-navigation": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-navigation-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-md-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-navigation": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-navigation-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md-mobile": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-touch-target bg-surface-container-lowest/85 backdrop-blur-xl rounded-xl mt-margin-mobile mx-margin-mobile shadow-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="search">search</span>
+<h1 class="text-headline-md-mobile font-headline-md-mobile text-primary tracking-tight">Explorar</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant/30 transition-all duration-300 active:scale-95">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A clean, professional studio headshot of a young male professional against a soft, neutral gray background. The lighting is bright and high-end, characteristic of a modern corporate aesthetic. The subject has a calm and confident expression, perfectly aligning with a sophisticated and dependable mapping utility brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_hM39lzbftL4lO0ijOhgm_MuqVLs0K6VUp3jBnbNvd3gsQHsPGQuYJAGVjWPdHBH_-cnztTRsaqnhVqvSUBgkW5WbHYXFZcxEC37njBgUNJaQWQaOcX8MUd6jtrHoDfmPkGn4HGtM5CCbeO2d40NgZLwCsmF52UtfDbzFY53rnoFt_v7I3q2a3E0sMCp6REIKAXXQHRE1FEbDNapKifhlmFmJlE3ubCCALTRWV84ogF9ikQaz1YmedxyX6QuThXNGamr9PFNgEmiE"/>
+</div>
+</header>
+<main class="pt-28 px-margin-mobile max-w-2xl mx-auto">
+<!-- Profile Hero -->
+<section class="flex flex-col items-center mb-8">
+<div class="relative mb-4">
+<div class="w-24 h-24 rounded-full overflow-hidden border-4 border-surface-container-lowest shadow-lg">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a male professional in a light-mode corporate setting. The aesthetic is minimalist and high-end, featuring a crisp white background with subtle depth. The subject embodies the dependable co-pilot personality of the brand, looking calm and technologically savvy with refined lighting and sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI8xNVecTzXvHVt2Vkc_yxGITbD8ma6WIQidTCy6zp29wBdXULLLqQXHyHn3IDyXTcvDKKhROyaWvQ6dcK4Fnj9S-GXF9j4rx9ZQo6jnBscoteefZjFxDWQAHLaOck2ZcOTTR3IiR64DFMBLa236HOO9uxg4gq1asV7Pp6CW2LpPDPcle9yHtt3VTSNKW23rUMR1n0ktWWY4oM6M-py9xfljRRZmDyfrnira4wEh6NCKq-jRULDsz3REVFHsYdMp_RFDefniaVAx6p"/>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary text-on-primary rounded-full p-1.5 shadow-md border-2 border-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit">edit</span>
+</div>
+</div>
+<h2 class="text-display-navigation-mobile font-display-navigation-mobile text-on-surface">Alex Thompson</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Explorador desde 2023 • Miembro Premium</p>
+</section>
+<!-- Favorite Routes Section -->
+<section class="mb-8">
+<div class="flex items-center justify-between mb-4 px-2">
+<h3 class="text-headline-md-mobile font-headline-md-mobile text-on-surface">Rutas Favoritas</h3>
+<span class="text-primary text-label-caps font-label-caps cursor-pointer">Ver todo</span>
+</div>
+<div class="space-y-3">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-outline-variant/20 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-primary-fixed/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="directions_bike">directions_bike</span>
+</div>
+<div>
+<h4 class="text-body-lg font-headline-md text-on-surface">Sendero del Río</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">12.4 km • Ruta panorámica</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant/40 rounded-full transition-all active:scale-90">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-full transition-all active:scale-90">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-outline-variant/20 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="commute">commute</span>
+</div>
+<div>
+<h4 class="text-body-lg font-headline-md text-on-surface">Camino al trabajo</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">8.2 km • Ruta optimizada</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant/40 rounded-full transition-all active:scale-90">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-error hover:bg-error-container/20 rounded-full transition-all active:scale-90">
+<span class="material-symbols-outlined text-[20px]" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent History Section -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-4 px-2">
+<h3 class="text-headline-md-mobile font-headline-md-mobile text-on-surface">Historial Reciente</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="history">history</span>
+</div>
+<div class="bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/20">
+<ul class="divide-y divide-outline-variant/20">
+<li class="p-4 flex items-center justify-between bg-surface-container-lowest hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="location_on">location_on</span>
+<div>
+<p class="text-body-lg font-headline-md text-on-surface">Central Park North</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">24 may • 14.5 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="chevron_right">chevron_right</span>
+</li>
+<li class="p-4 flex items-center justify-between bg-surface-container-lowest hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="schedule">schedule</span>
+<div>
+<p class="text-body-lg font-headline-md text-on-surface">Downtown Office Hub</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">23 may • 6.2 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="chevron_right">chevron_right</span>
+</li>
+<li class="p-4 flex items-center justify-between bg-surface-container-lowest hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="location_on">location_on</span>
+<div>
+<p class="text-body-lg font-headline-md text-on-surface">Harbor Marina</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">22 may • 22.1 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="chevron_right">chevron_right</span>
+</li>
+<li class="p-4 flex items-center justify-between bg-surface-container-lowest hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="schedule">schedule</span>
+<div>
+<p class="text-body-lg font-headline-md text-on-surface">Westside Shopping Mall</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">20 may • 4.8 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="chevron_right">chevron_right</span>
+</li>
+<li class="p-4 flex items-center justify-between bg-surface-container-lowest hover:bg-surface-variant/20 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="location_on">location_on</span>
+<div>
+<p class="text-body-lg font-headline-md text-on-surface">Peak View Point</p>
+<p class="text-body-sm font-body-sm text-on-surface-variant">18 may • 31.0 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]" data-icon="chevron_right">chevron_right</span>
+</li>
+</ul>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter py-2 pb-safe bg-surface-container-lowest/80 backdrop-blur-xl rounded-t-xl shadow-lg border-t border-outline-variant/30">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/40 transition-transform duration-200 active:scale-90 py-1">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="text-label-caps font-label-caps">Mapa</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/40 transition-transform duration-200 active:scale-90 py-1">
+<span class="material-symbols-outlined" data-icon="directions">directions</span>
+<span class="text-label-caps font-label-caps">Rutas</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 transition-transform duration-200 active:scale-90">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-label-caps font-label-caps">Perfil</span>
+</div>
+</nav>
+</body></html>

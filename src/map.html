@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.map-canvas {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBvsWC1elnSV8upPTQdlZ530xSJMNcIMaMXPE222kWlPQyDNvieEAzbtCeHsMzc-ToyzoaZCYsM5PxNn1rc2elmzMdSqa2QaGm3H3IhIZDnx5VQ1DzPhWQreiqv0_Q7poVuBq7mU8iE7IF6CcmHb-PR9wNPFXWeCiPYAalb6U4Na_wSvwJRdennNhfuH0GNJCBKvKCnTj3mhxsPqTOip2sLwJEsh34bCOVblOaSRWW9vNkTs5chOJomNRkrOGqNnRMJm74fxVcreY0L);
+    background-size: cover;
+    background-position: center
+    }</style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed": "#00174b",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary": "#006c49",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#00714d",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "on-primary-container": "#eeefff",
+                        "on-secondary-fixed": "#002113",
+                        "error-container": "#ffdad6",
+                        "on-background": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa",
+                        "background": "#f8f9fa",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcd",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-tertiary-fixed": "#360f00",
+                        "surface-container": "#edeeef",
+                        "primary-fixed": "#dbe1ff",
+                        "primary-container": "#2563eb",
+                        "secondary-container": "#6cf8bb",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary": "#004ac6",
+                        "on-tertiary-container": "#ffede6",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-container": "#bc4800",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "inverse-primary": "#b4c5ff",
+                        "on-surface": "#191c1d",
+                        "tertiary": "#943700",
+                        "outline-variant": "#c3c6d7",
+                        "outline": "#737686",
+                        "surface-tint": "#0053db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base-unit": "4px",
+                        "gutter": "16px",
+                        "margin-desktop": "24px",
+                        "touch-target": "44px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "display-navigation": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-navigation-mobile": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-navigation": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "display-navigation-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-md-mobile": ["18px", {"lineHeight": "24px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-lg overflow-hidden h-screen w-screen relative">
+<!-- TopAppBar Navigation Shell -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-touch-target bg-surface-container-lowest/85 backdrop-blur-xl rounded-xl mt-margin-mobile mx-margin-mobile shadow-md">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-primary transition-all duration-300 active:scale-95 hover:bg-surface-variant/50">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<h1 class="text-headline-md-mobile font-headline-md-mobile text-primary tracking-tight">Explorar</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img alt="Foto de perfil de usuario" class="w-full h-full object-cover" data-alt="A professional high-resolution headshot of a person for a user profile, set against a clean, blurred architectural background. The lighting is soft and natural, emphasizing a professional yet approachable look. The color palette is composed of cool blues and soft greys, maintaining a modern and dependable corporate aesthetic that aligns with a high-end mapping utility application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8JM8WYxLe7NT4SS039WpNusfubVi33DwCLa3MLzXYWI8aDOgGvE5WOcKpjapI359aYgOeu7K3_tGlqNKcmzoMYmM3tPBlvwt3xfMgeuL5xTA5kKZIoL9WBcSVu9P76me800USSLXE_eA-tgdzAxuL_yeT-hWuZCO_t8jmMrUPhyNIHI0ouqJKldpinr3qO-Lws9Usznz_1V8mDToOnkp-AkyeC08PEzXmavEWbFX0npfV4NMcZkZ1T8_F9eqNWKhuyskDwkeYiKDE"/>
+</div>
+</div>
+</header>
+<!-- Main Map Canvas -->
+<main class="absolute inset-0 z-0 map-canvas" data-location="San Francisco">
+<!-- Map Pin: Product/Active Location -->
+<div class="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 group cursor-pointer">
+<div class="relative flex flex-col items-center">
+<div class="bg-primary text-on-primary p-2 rounded-full shadow-lg border-2 border-surface-container-lowest transition-transform active:scale-90">
+<span class="material-symbols-outlined" data-icon="pool">pool</span>
+</div>
+<div class="mt-1 px-3 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-lg shadow-md border border-outline-variant">
+<span class="text-label-caps font-label-caps text-on-surface">Piscina Ola Azul</span>
+</div>
+<div class="w-0.5 h-2 bg-primary shadow-sm"></div>
+</div>
+</div>
+<!-- Map Pin: Generic POI -->
+<div class="absolute top-1/3 left-2/3 -translate-x-1/2 -translate-y-1/2 group cursor-pointer opacity-80">
+<div class="relative flex flex-col items-center">
+<div class="bg-secondary text-on-secondary p-1.5 rounded-full shadow-md border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[18px]" data-icon="restaurant">restaurant</span>
+</div>
+<div class="w-0.5 h-1.5 bg-secondary"></div>
+</div>
+</div>
+<!-- Map Pin: Generic POI 2 -->
+<div class="absolute bottom-1/3 right-1/4 -translate-x-1/2 -translate-y-1/2 group cursor-pointer opacity-80">
+<div class="relative flex flex-col items-center">
+<div class="bg-on-surface-variant text-on-secondary p-1.5 rounded-full shadow-md border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-[18px]" data-icon="local_parking">local_parking</span>
+</div>
+<div class="w-0.5 h-1.5 bg-on-surface-variant"></div>
+</div>
+</div>
+</main>
+<!-- Map Controls (Vertical Axis) -->
+<aside class="fixed right-margin-mobile top-1/2 -translate-y-1/2 z-40 flex flex-col gap-3">
+<button class="w-touch-target h-touch-target bg-surface-container-lowest/90 backdrop-blur-lg rounded-xl shadow-md flex items-center justify-center text-on-surface-variant border border-outline-variant/30 transition-all active:scale-90 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+</button>
+<button class="w-touch-target h-touch-target bg-surface-container-lowest/90 backdrop-blur-lg rounded-xl shadow-md flex items-center justify-center text-on-surface-variant border border-outline-variant/30 transition-all active:scale-90 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<button class="w-touch-target h-touch-target bg-surface-container-lowest/90 backdrop-blur-lg rounded-xl shadow-md flex items-center justify-center text-on-surface-variant border border-outline-variant/30 transition-all active:scale-90 hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</button>
+<button class="w-touch-target h-touch-target bg-primary-container text-on-primary-container rounded-xl shadow-lg flex items-center justify-center border border-primary transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="my_location" style="font-variation-settings: 'FILL' 1;">my_location</span>
+</button>
+</aside>
+<!-- Bottom Action Sheet (Peek State) -->
+<div class="fixed bottom-24 left-margin-mobile right-margin-mobile z-40">
+<div class="bg-surface-container-lowest/85 backdrop-blur-xl rounded-2xl p-4 shadow-lg border border-outline-variant/20 flex items-center gap-4">
+<div class="flex-1">
+<h3 class="font-headline-md text-headline-md text-on-surface leading-tight">Servicios Cercanos</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant">3 ubicaciones encontradas en tu zona</p>
+</div>
+<div class="flex gap-2">
+<div class="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full text-label-caps font-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="bolt">bolt</span>
+                    Más rápido
+                </div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter py-2 pb-safe bg-surface-container-lowest/80 backdrop-blur-xl rounded-t-xl shadow-lg border-t border-outline-variant/30">
+<!-- Map Tab (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 transition-transform duration-200 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-icon="map" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="text-label-caps font-label-caps">Mapa</span>
+</a>
+<!-- Routes Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant transition-transform duration-200 active:scale-90 hover:bg-surface-variant/40 rounded-xl px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="directions">directions</span>
+<span class="text-label-caps font-label-caps">Rutas</span>
+</a>
+<!-- Profile Tab -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant transition-transform duration-200 active:scale-90 hover:bg-surface-variant/40 rounded-xl px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-label-caps font-label-caps">Perfil</span>
+</a>
+</nav>
+</body></html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#434655",
+                    "on-primary-fixed": "#00174b",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#d9dadb",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#006c49",
+                    "error": "#ba1a1a",
+                    "on-secondary-container": "#00714d",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-container-low": "#f3f4f5",
+                    "surface": "#f8f9fa",
+                    "surface-variant": "#e1e3e4",
+                    "on-primary-container": "#eeefff",
+                    "on-secondary-fixed": "#002113",
+                    "error-container": "#ffdad6",
+                    "on-background": "#191c1d",
+                    "surface-container-highest": "#e1e3e4",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed": "#6ffbbe",
+                    "inverse-surface": "#2e3132",
+                    "surface-bright": "#f8f9fa",
+                    "background": "#f8f9fa",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-tertiary-fixed": "#360f00",
+                    "surface-container": "#edeeef",
+                    "primary-fixed": "#dbe1ff",
+                    "primary-container": "#2563eb",
+                    "secondary-container": "#6cf8bb",
+                    "on-secondary-fixed-variant": "#005236",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary-fixed-dim": "#4edea3",
+                    "primary": "#004ac6",
+                    "on-tertiary-container": "#ffede6",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-container": "#bc4800",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "inverse-primary": "#b4c5ff",
+                    "on-surface": "#191c1d",
+                    "tertiary": "#943700",
+                    "outline-variant": "#c3c6d7",
+                    "outline": "#737686",
+                    "surface-tint": "#0053db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base-unit": "4px",
+                    "gutter": "16px",
+                    "margin-desktop": "24px",
+                    "touch-target": "44px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "display-navigation": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display-navigation-mobile": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-navigation": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-navigation-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-touch-target bg-surface-container-lowest/85 backdrop-blur-xl shadow-md rounded-xl mt-margin-mobile mx-margin-mobile">
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center w-touch-target h-touch-target text-primary transition-all duration-300 active:scale-95 hover:bg-surface-variant/50 rounded-full">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-headline-md-mobile font-headline-md-mobile text-primary tracking-tight">Rutas</h1>
+</div>
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="Foto de perfil del usuario" data-alt="A professional close-up headshot of a friendly user for a high-end application profile. The lighting is soft and cinematic, with a clean minimalist background. The style is modern corporate, emphasizing a dependable and sophisticated personality. The color palette remains neutral with soft white and gray tones to ensure UI consistency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj0SVE2TUKnDgjkTzF9YKELqiY3UpiwI5ohRYVoof63V55mI3a2jfp0QTDtMmMAVf6sV3p0QrnlgEMXDufpawYwR66CbF44eakdODuKrStR7eRFEcT0lQaPXNJv_KnjOC7ooJdq8UgkvUcy4xwRq8PulubXGR58n4BKbajeo0iwk8i9XQZXIXUTsLMwX9I7OcRsvMcjg8qycfc7DDfoyoBNO8tUkZXBZEmot7SqPi9oJlSVB-YBx_88jbNZCr5U6MkhxHII-40N28e"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[100px] px-margin-mobile pb-24 max-w-2xl mx-auto w-full">
+<!-- Input Section -->
+<section class="bg-surface-container-lowest rounded-xl p-4 shadow-md border border-outline-variant/20 mb-6">
+<div class="flex flex-col gap-4 relative">
+<!-- Visual Connection Line -->
+<div class="absolute left-[21px] top-[28px] bottom-[28px] w-0.5 bg-outline-variant/40"></div>
+<!-- Origin Input -->
+<div class="flex items-center gap-4 group">
+<span class="material-symbols-outlined text-primary z-10" data-icon="my_location" style="font-variation-settings: 'FILL' 1;">my_location</span>
+<div class="flex-grow">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">Origen</label>
+<input class="w-full bg-surface-container-low border-none rounded-lg font-body-lg text-body-lg text-primary focus:ring-2 focus:ring-primary/20 py-2 px-3 transition-all" readonly="" type="text" value="Ubicación actual"/>
+</div>
+</div>
+<!-- Destination Input -->
+<div class="flex items-center gap-4 group">
+<span class="material-symbols-outlined text-outline z-10" data-icon="location_on">location_on</span>
+<div class="flex-grow">
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-1">Destino</label>
+<input autofocus="" class="w-full bg-surface border-2 border-primary rounded-lg font-body-lg text-body-lg text-on-surface focus:ring-4 focus:ring-primary/10 py-2 px-3 transition-all outline-none" placeholder="¿A dónde vas?" type="text"/>
+</div>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="swap_vert">swap_vert</span>
+</button>
+</div>
+</div>
+<!-- Quick Action Chips -->
+<div class="flex gap-2 mt-6 overflow-x-auto pb-2">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full hover:bg-surface-variant transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-sm" data-icon="home">home</span>
+<span class="font-label-caps text-label-caps">Casa</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full hover:bg-surface-variant transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-sm" data-icon="work">work</span>
+<span class="font-label-caps text-label-caps">Trabajo</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-low border border-outline-variant/30 rounded-full hover:bg-surface-variant transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="font-label-caps text-label-caps">Añadir</span>
+</button>
+</div>
+</section>
+<!-- Recent Searches Section -->
+<section>
+<div class="flex justify-between items-center mb-4 px-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">Búsquedas recientes</h2>
+<button class="font-label-caps text-label-caps text-primary hover:underline">Borrar todo</button>
+</div>
+<div class="space-y-2">
+<!-- Recent Item 1 -->
+<button class="w-full flex items-center gap-4 p-4 bg-surface-container-lowest/50 hover:bg-surface-container-high transition-all rounded-xl border border-outline-variant/10 group">
+<div class="w-10 h-10 flex items-center justify-center bg-surface-container rounded-lg group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</div>
+<div class="flex-grow text-left">
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">Central Park West</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">New York, NY 10024</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Recent Item 2 -->
+<button class="w-full flex items-center gap-4 p-4 bg-surface-container-lowest/50 hover:bg-surface-container-high transition-all rounded-xl border border-outline-variant/10 group">
+<div class="w-10 h-10 flex items-center justify-center bg-surface-container rounded-lg group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</div>
+<div class="flex-grow text-left">
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">MoMA - Museum of Modern Art</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">11 W 53rd St, New York</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Recent Item 3 -->
+<button class="w-full flex items-center gap-4 p-4 bg-surface-container-lowest/50 hover:bg-surface-container-high transition-all rounded-xl border border-outline-variant/10 group">
+<div class="w-10 h-10 flex items-center justify-center bg-surface-container rounded-lg group-hover:bg-primary-container group-hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</div>
+<div class="flex-grow text-left">
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">Grand Central Terminal</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">89 E 42nd St, New York</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Glassmorphism Map Preview (Asymmetric Pattern) -->
+<section class="mt-8">
+<div class="relative h-48 rounded-2xl overflow-hidden border border-outline-variant/30 shadow-lg">
+<img alt="Vista previa del mapa" class="w-full h-full object-cover" data-alt="A stylized aerial view of a clean, modern city map grid. The map features high-end UI elements such as translucent route lines and soft blue accents. The visual style is Corporate Modern, focusing on utility and clarity. The scene is bright with a light-mode aesthetic, emphasizing spatial orientation and directional confidence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB54q-KzhwigBqA7tTqIVerfsUkyyLqK7wK8rcgnfDlMDEaXYbim0QhN2awhFRItAUP2kGewulRNDdCFabQfmSp_5A0oAAfVc66BuwAu-4qcMLQinOziYeCUWNNF1di4vpqabY3tPH9FCN9XS7rZnb_3YmU51n1MhBzGRQzJ4wWpg-GsuIUf5ltrEk_kWuEV7gCA68SWim19lS24-J3xQHwUnzr3vwVl-nmM2L-ramMnzk1IjwpDe4sYLscT-ipP39iTykIhr3aQWat"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/90 to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4 p-4 bg-white/60 backdrop-blur-md rounded-xl border border-white/40 flex justify-between items-center">
+<div>
+<p class="font-label-caps text-label-caps text-primary uppercase">MODO EXPLORAR</p>
+<p class="font-body-lg text-body-lg font-bold text-on-surface">Ver mapa del área actual</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps transition-all active:scale-95 shadow-lg shadow-primary/20">Abrir Mapa</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter py-2 pb-safe bg-surface-container-lowest/80 backdrop-blur-xl border-t border-outline-variant/30 shadow-lg rounded-t-xl">
+<!-- Map Tab -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant transition-transform duration-200 active:scale-90 hover:bg-surface-variant/40 p-2 rounded-xl"> 
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-caps text-label-caps mt-1">Mapa</span>
+</button>
+<!-- Routes Tab (Active) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-5 py-1 transition-transform duration-200 active:scale-90">
+<span class="material-symbols-outlined" data-icon="directions" style="font-variation-settings: 'FILL' 1;">directions</span>
+<span class="font-label-caps text-label-caps">Rutas</span>
+</button>
+<!-- Profile Tab -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant transition-transform duration-200 active:scale-90 hover:bg-surface-variant/40 p-2 rounded-xl">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-caps text-label-caps mt-1">Perfil</span>
+</button>
+</nav>
+</body></html>
