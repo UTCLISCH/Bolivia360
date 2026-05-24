@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 
@@ -79,8 +79,8 @@ function RoutingMachine({ waypoints }: { waypoints: [number, number][] }) {
       waypoints: waypoints.map(([lat, lng]) => L.latLng(lat, lng)),
       routeWhileDragging: false,
       addWaypoints: false,
-      createMarker: () => null, // Don't create default markers
-      show: false, // Hide the instructions panel
+      createMarker: () => null,
+      show: false,
       lineOptions: {
         styles: [{ color: '#0077B6', weight: 6, opacity: 0.8 }]
       }
@@ -99,16 +99,6 @@ function MapView({ selectedDestino, currentLocation }: {
   selectedDestino?: Destino; 
   currentLocation: [number, number] 
 }) {
-  const [routeWaypoints, setRouteWaypoints] = useState<[number, number][]>([]);
-
-  useEffect(() => {
-    if (selectedDestino) {
-      setRouteWaypoints([currentLocation, [selectedDestino.lat, selectedDestino.lng]]);
-    } else {
-      setRouteWaypoints([]);
-    }
-  }, [selectedDestino, currentLocation]);
-
   return (
     <div className="h-96 w-full rounded-xl overflow-hidden border border-gray-200">
       <MapContainer 
@@ -145,8 +135,8 @@ function MapView({ selectedDestino, currentLocation }: {
           </Marker>
         ))}
 
-        {/* Routing */}
-        {routeWaypoints.length >= 2 && <RoutingMachine waypoints={routeWaypoints} />}
+        {/* Routing control draws a realistic route along streets */}
+        {selectedDestino && <RoutingMachine waypoints={[currentLocation, [selectedDestino.lat, selectedDestino.lng]]} />}
       </MapContainer>
     </div>
   );
@@ -158,7 +148,6 @@ const ROLE_MENUS = {
     { id: 'inicio', label: 'Inicio', icon: 'home' },
     { id: 'planificar', label: 'Planificar', icon: 'explore' },
     { id: 'destinos', label: 'Destinos', icon: 'location_on' },
-    { id: 'clima', label: 'Clima', icon: 'partly_cloudy_day' },
     { id: 'alertas', label: 'Alertas', icon: 'warning' },
   ],
   administrador: [
@@ -188,7 +177,7 @@ const MOCK_DESTINOS: Destino[] = [
 const MOCK_USERS: User[] = [
   { id: 1, name: 'Juan Perez', email: 'juan@test.com', phone: '+591 70000001', role: 'Turista', status: 'activo', registeredAt: '2024-01-15' },
   { id: 2, name: 'Agencia Andes', email: 'contacto@andes.com', phone: '+591 70000002', role: 'Turista', status: 'activo', registeredAt: '2024-02-20' },
-  { id: 3, name: 'Admin Principal', email: 'admin@bolivia360.com', phone: '+591 70000003', role: 'Administrador', status: 'activo', registeredAt: '2024-01-01' },
+  { id: 3, name: 'Admin Principal', email: 'admin@chuquiago360.com', phone: '+591 70000003', role: 'Administrador', status: 'activo', registeredAt: '2024-01-01' },
   { id: 4, name: 'Maria Lopez', email: 'maria@test.com', phone: '+591 70000004', role: 'Turista', status: 'inactivo', registeredAt: '2024-03-10' },
   { id: 5, name: 'Carlos Rodriguez', email: 'carlos@test.com', phone: '+591 70000005', role: 'Turista', status: 'activo', registeredAt: '2024-04-05' },
   { id: 6, name: 'Ana Garcia', email: 'ana@test.com', phone: '+591 70000006', role: 'Turista', status: 'activo', registeredAt: '2024-05-12' },
@@ -210,7 +199,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 // --- Main App Component ---
 export default function App() {
   const [users, setUsers] = useState<User[]>(() => {
-    const saved = localStorage.getItem('bolivia360_users');
+    const saved = localStorage.getItem('chuquiago360_users');
     if (saved) {
       const parsedUsers = JSON.parse(saved) as User[];
       return parsedUsers.length > 0 ? parsedUsers : MOCK_USERS;
@@ -218,23 +207,23 @@ export default function App() {
     return MOCK_USERS;
   });
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('bolivia360_current_user');
+    const saved = localStorage.getItem('chuquiago360_current_user');
     return saved ? JSON.parse(saved) as User : null;
   });
   const [currentView, setCurrentView] = useState<ViewState>(() => {
-    const saved = localStorage.getItem('bolivia360_current_user');
+    const saved = localStorage.getItem('chuquiago360_current_user');
     return saved ? 'app' : 'landing';
   });
 
   useEffect(() => {
-    localStorage.setItem('bolivia360_users', JSON.stringify(users));
+    localStorage.setItem('chuquiago360_users', JSON.stringify(users));
   }, [users]);
 
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('bolivia360_current_user', JSON.stringify(currentUser));
+      localStorage.setItem('chuquiago360_current_user', JSON.stringify(currentUser));
     } else {
-      localStorage.removeItem('bolivia360_current_user');
+      localStorage.removeItem('chuquiago360_current_user');
     }
   }, [currentUser]);
 
@@ -269,7 +258,7 @@ export default function App() {
     setUsers([...users, newUser]);
     setCurrentUser(newUser);
     setCurrentView('app');
-    window.alert('Registro exitoso. Bienvenido a Bolivia360.');
+    window.alert('Registro exitoso. Bienvenido a Chuquiago360.');
   };
 
   const handleUpdateProfile = (updatedUser: User) => {
@@ -295,7 +284,7 @@ function LandingView({ onNavigate }: { onNavigate: (v: ViewState) => void }) {
       <header className="flex items-center justify-between p-6 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-2 text-[#0077B6] font-bold text-2xl tracking-tight">
           <Icon name="travel_explore" className="text-3xl" />
-          <span>Bolivia360</span>
+          <span>Chuquiago360</span>
         </div>
         <div className="flex gap-3">
           <button onClick={() => onNavigate('login')} className="px-5 py-2.5 text-[#0077B6] font-medium hover:bg-blue-50 rounded-full transition-colors">
@@ -314,11 +303,11 @@ function LandingView({ onNavigate }: { onNavigate: (v: ViewState) => void }) {
         </div>
         <div className="relative z-10 max-w-5xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
-            Descubre Bolivia con <br /><span className="text-[#0077B6] bg-clip-text text-transparent bg-gradient-to-r from-[#0077B6] to-[#2D6A4F]">Bolivia360</span>
+            Descubre La Paz con <br /><span className="text-[#0077B6] bg-clip-text text-transparent bg-gradient-to-r from-[#0077B6] to-[#2D6A4F]">Chuquiago360</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
             Tu guía completa para explorar los tesoros naturales, culturales e históricos de La Paz y sus alrededores.
-            Planifica viajes, recibe alertas de seguridad y conecta con la comunidad turística paceña.
+            Planifica rutas, recibe alertas de seguridad y conecta con la comunidad turística paceña.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <button onClick={() => onNavigate('register')} className="px-8 py-4 bg-[#0077B6] text-white font-semibold rounded-full hover:bg-[#005f92] transition-all shadow-lg hover:-translate-y-1 flex items-center gap-2 text-lg">
@@ -331,12 +320,12 @@ function LandingView({ onNavigate }: { onNavigate: (v: ViewState) => void }) {
         </div>
       </section>
 
-      {/* What is Bolivia360 Section */}
+      {/* What is Chuquiago360 Section */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">¿Qué es Bolivia360?</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">¿Qué es Chuquiago360?</h2>
           <p className="text-xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Bolivia360 es la plataforma turística más completa de La Paz, diseñada para ofrecerte una experiencia
+            Chuquiago360 es la plataforma turística más completa de La Paz, diseñada para ofrecerte una experiencia
             única en la planificación y disfrute de tus viajes. Desde la majestuosa Basílica de San Francisco hasta las formaciones
             rocosas del Valle de la Luna, te acompañamos en cada paso de tu aventura paceña.
           </p>
@@ -431,7 +420,7 @@ function LandingView({ onNavigate }: { onNavigate: (v: ViewState) => void }) {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-8">¿Listo para tu próxima aventura?</h2>
           <p className="text-xl mb-10 opacity-90">
-            Únete a miles de viajeros que ya han descubierto Bolivia con Bolivia360.
+            Únete a miles de viajeros que ya han descubierto Bolivia con Chuquiago360.
             Crea tu cuenta gratuita y comienza a planificar tu viaje perfecto.
           </p>
           <button onClick={() => onNavigate('register')} className="px-10 py-5 bg-white text-[#0077B6] font-bold rounded-full hover:bg-gray-100 transition-all shadow-lg hover:-translate-y-1 text-xl">
@@ -445,13 +434,13 @@ function LandingView({ onNavigate }: { onNavigate: (v: ViewState) => void }) {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-8">
             <Icon name="travel_explore" className="text-3xl text-[#0077B6]" />
-            <span className="text-2xl font-bold">Bolivia360</span>
+            <span className="text-2xl font-bold">Chuquiago360</span>
           </div>
           <p className="text-center text-gray-400 mb-8 max-w-2xl mx-auto">
             La plataforma turística líder de La Paz, conectando viajeros con las maravillas naturales y culturales de nuestra ciudad.
           </p>
           <div className="text-center text-sm text-gray-500">
-            © 2024 Bolivia360. Todos los derechos reservados.
+            © 2024 Chuquiago360. Todos los derechos reservados.
           </div>
         </div>
       </footer>
@@ -483,7 +472,7 @@ function RegisterView({ onNavigate, onRegister }: { onNavigate: (v: ViewState) =
           <div className="flex justify-center mb-8 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="flex items-center gap-2 text-[#2D6A4F] font-bold text-4xl tracking-tight">
               <Icon name="travel_explore" className="text-5xl" />
-              <span>Bolivia360</span>
+              <span>Chuquiago360</span>
             </div>
           </div>
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Crear una cuenta</h2>
@@ -563,7 +552,7 @@ function LoginView({ onNavigate, users, onLogin }: { onNavigate: (v: ViewState) 
           <div className="flex justify-center mb-8 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="flex items-center gap-2 text-[#0077B6] font-bold text-4xl tracking-tight">
               <Icon name="travel_explore" className="text-5xl" />
-              <span>Bolivia360</span>
+              <span>Chuquiago360</span>
             </div>
           </div>
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Iniciar Sesión</h2>
@@ -656,7 +645,7 @@ function MainAppView({ currentUser, users, setUsers, onUpdateProfile, onLogout }
           <div className="flex justify-between items-center h-16 border-b border-gray-100">
             <div className="flex items-center gap-2 text-[#0077B6] font-bold text-2xl">
               <Icon name="travel_explore" className="text-3xl" />
-              <span className="hidden sm:block">Bolivia360</span>
+              <span className="hidden sm:block">Chuquiago360</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="hidden md:block text-sm font-bold text-[#2D6A4F] uppercase bg-green-50 px-3 py-1 rounded-full">
@@ -931,6 +920,33 @@ function TuristaDestinos({ onSelect, selectedDestino: propSelectedDestino }: { o
   const [currentLocation] = useState<[number, number]>([-16.53483356011511, -68.08682682995484]); // La Paz coordinates
   const [filterCategory, setFilterCategory] = useState<string>('todos');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [destinoWeather, setDestinoWeather] = useState<OpenMeteoForecast | null>(null);
+  const [destinoWeatherStatus, setDestinoWeatherStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [destinoWeatherError, setDestinoWeatherError] = useState<string>('');
+  const [destinoWeatherLabel, setDestinoWeatherLabel] = useState<string>('');
+
+  const getWeatherEmoji = (code: number) => {
+    const icons: Record<number, string> = {
+      0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+      45: '🌫️', 48: '🌫️', 51: '🌦️', 53: '🌧️', 55: '🌧️',
+      61: '🌧️', 63: '🌧️', 65: '🌧️', 71: '❄️', 73: '❄️',
+      75: '❄️', 77: '❄️', 80: '🌦️', 81: '🌧️', 82: '🌧️',
+      85: '❄️', 86: '❄️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
+    };
+    return icons[code] ?? '🌡️';
+  };
+
+  const getWeatherDescription = (code: number) => {
+    const descriptions: Record<number, string> = {
+      0: 'Despejado', 1: 'Poco nublado', 2: 'Parcialmente nublado', 3: 'Nublado',
+      45: 'Niebla', 48: 'Bruma', 51: 'Llovizna ligera', 53: 'Lluvia ligera', 55: 'Lluvia moderada',
+      61: 'Lluvia', 63: 'Lluvia fuerte', 65: 'Lluvia intensa', 71: 'Nieve ligera',
+      73: 'Nieve moderada', 75: 'Nieve intensa', 77: 'Aguanieve', 80: 'Lluvias aisladas',
+      81: 'Lluvias frecuentes', 82: 'Lluvias fuertes', 85: 'Chubascos de nieve',
+      86: 'Tormenta de nieve', 95: 'Tormenta eléctrica', 96: 'Tormenta con granizo', 99: 'Tormenta severa'
+    };
+    return descriptions[code] ?? 'Condiciones variables';
+  };
 
   // Sincronizar con el prop cuando cambie
   useEffect(() => {
@@ -938,6 +954,65 @@ function TuristaDestinos({ onSelect, selectedDestino: propSelectedDestino }: { o
       setSelectedDestino(propSelectedDestino);
     }
   }, [propSelectedDestino]);
+
+  useEffect(() => {
+    if (!selectedDestino) {
+      setDestinoWeather(null);
+      setDestinoWeatherStatus('idle');
+      setDestinoWeatherError('');
+      setDestinoWeatherLabel('');
+      return;
+    }
+
+    let isCancelled = false;
+    const fetchDestinoWeather = async () => {
+      setDestinoWeatherStatus('loading');
+      setDestinoWeatherError('');
+
+      try {
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${selectedDestino.lat}&longitude=${selectedDestino.lng}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_mean,weathercode&timezone=auto&forecast_days=3`;
+        const response = await fetch(weatherUrl);
+        if (!response.ok) {
+          throw new Error(`API clima respondió con ${response.status}`);
+        }
+        const data = (await response.json()) as OpenMeteoForecast;
+        if (!data.current_weather || !data.daily) {
+          throw new Error('Respuesta incompleta del servicio meteorológico');
+        }
+        if (isCancelled) return;
+        setDestinoWeather(data);
+
+        try {
+          const reverseUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${selectedDestino.lat}&lon=${selectedDestino.lng}`;
+          const reverseResponse = await fetch(reverseUrl);
+          if (reverseResponse.ok) {
+            const reverseData = await reverseResponse.json();
+            const label = reverseData.address?.city || reverseData.address?.town || reverseData.address?.village || reverseData.display_name?.split(',')[0];
+            if (label && !isCancelled) {
+              setDestinoWeatherLabel(label);
+            }
+          }
+        } catch {
+          if (!isCancelled) {
+            setDestinoWeatherLabel(selectedDestino.title);
+          }
+        }
+
+        if (!isCancelled) {
+          setDestinoWeatherStatus('ready');
+        }
+      } catch (error: any) {
+        if (!isCancelled) {
+          setDestinoWeatherStatus('error');
+          setDestinoWeatherError(error?.message ?? 'No se pudo cargar el clima.');
+          setDestinoWeather(null);
+        }
+      }
+    };
+
+    fetchDestinoWeather();
+    return () => { isCancelled = true; };
+  }, [selectedDestino]);
 
   const categories = ['todos', ...Array.from(new Set(MOCK_DESTINOS.map(d => d.category)))];
 
@@ -991,28 +1066,92 @@ function TuristaDestinos({ onSelect, selectedDestino: propSelectedDestino }: { o
         </h3>
         <MapView selectedDestino={selectedDestino || undefined} currentLocation={currentLocation} />
         {selectedDestino && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-start gap-4">
-              <img src={selectedDestino.image} alt={selectedDestino.title} className="w-20 h-20 object-cover rounded-lg" referrerPolicy="no-referrer" />
-              <div className="flex-1">
-                <h4 className="font-bold text-lg text-blue-900">{selectedDestino.title}</h4>
-                <p className="text-blue-700 mb-2">{selectedDestino.desc}</p>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1">
-                    <Icon name="star" className="text-yellow-400" />
-                    {selectedDestino.rating}
-                  </span>
-                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {selectedDestino.category}
-                  </span>
+          <div className="mt-4 grid gap-4">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-start gap-4">
+                <img src={selectedDestino.image} alt={selectedDestino.title} className="w-20 h-20 object-cover rounded-lg" referrerPolicy="no-referrer" />
+                <div className="flex-1">
+                  <h4 className="font-bold text-lg text-blue-900">{selectedDestino.title}</h4>
+                  <p className="text-blue-700 mb-2">{selectedDestino.desc}</p>
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="flex items-center gap-1">
+                      <Icon name="star" className="text-yellow-400" />
+                      {selectedDestino.rating}
+                    </span>
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      {selectedDestino.category}
+                    </span>
+                  </div>
                 </div>
+                <button 
+                  onClick={() => setSelectedDestino(null)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <Icon name="close" />
+                </button>
               </div>
-              <button 
-                onClick={() => setSelectedDestino(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Icon name="close" />
-              </button>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-sm text-gray-500 uppercase tracking-[0.24em]">Clima del destino</p>
+                  <h4 className="text-xl font-bold text-gray-900">{destinoWeatherLabel || selectedDestino.title}</h4>
+                </div>
+                <div className="text-4xl">{destinoWeather ? getWeatherEmoji(destinoWeather.current_weather.weathercode) : '🌦️'}</div>
+              </div>
+
+              {destinoWeatherStatus === 'loading' && (
+                <div className="rounded-3xl bg-slate-50 p-4 text-sm text-gray-600">Cargando clima del destino...</div>
+              )}
+
+              {destinoWeatherStatus === 'error' && (
+                <div className="rounded-3xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">{destinoWeatherError}</div>
+              )}
+
+              {destinoWeatherStatus === 'ready' && destinoWeather && (
+                <div className="space-y-4">
+                  <div className="rounded-3xl bg-slate-50 p-4">
+                    <p className="text-sm text-gray-500">Condición</p>
+                    <p className="mt-2 text-lg font-semibold text-gray-900">{getWeatherDescription(destinoWeather.current_weather.weathercode)}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-3xl bg-slate-50 p-4">
+                      <p className="text-sm text-gray-500">Temperatura</p>
+                      <p className="mt-2 text-2xl font-semibold text-gray-900">{Math.round(destinoWeather.current_weather.temperature)}°C</p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-50 p-4">
+                      <p className="text-sm text-gray-500">Viento</p>
+                      <p className="mt-2 text-2xl font-semibold text-gray-900">{Math.round(destinoWeather.current_weather.windspeed)} km/h</p>
+                    </div>
+                  </div>
+                  <div className="rounded-3xl bg-slate-50 p-4 text-sm text-gray-600">
+                    <p>Pronóstico de {destinoWeather.daily.time.length} días</p>
+                    <div className="mt-3 space-y-2">
+                      {destinoWeather.daily.time.map((day, index) => {
+                        const date = new Date(day);
+                        const dayName = date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+                        return (
+                          <div key={day} className="flex items-center justify-between gap-3">
+                            <div className="font-semibold text-gray-800">{dayName}</div>
+                            <div className="text-gray-500 text-sm">{Math.round(destinoWeather.daily.temperature_2m_max[index])}° / {Math.round(destinoWeather.daily.temperature_2m_min[index])}°</div>
+                            <div>{getWeatherEmoji(destinoWeather.daily.weathercode[index])}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
+                    <p className="font-semibold text-slate-900 mb-3">Recomendaciones climáticas para este destino</p>
+                    <ul className="space-y-2">
+                      <li>• Usa capas porque el clima puede cambiar rápido en la región.</li>
+                      <li>• Lleva impermeable y calzado adecuado si hay probabilidad de lluvia.</li>
+                      <li>• Protege tu piel con bloqueador solar en altura.</li>
+                      <li>• Planea actividades al aire libre en las horas más secas del día.</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1049,46 +1188,229 @@ function TuristaDestinos({ onSelect, selectedDestino: propSelectedDestino }: { o
   );
 }
 
+type OpenMeteoForecast = {
+  current_weather: {
+    temperature: number;
+    windspeed: number;
+    winddirection: number;
+    weathercode: number;
+    time: string;
+  };
+  daily: {
+    time: string[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    precipitation_probability_mean: number[];
+    weathercode: number[];
+  };
+};
+
 function TuristaClima() {
+  const defaultCenter = { lat: -16.4940, lng: -68.1474 };
+  const [position, setPosition] = useState(defaultCenter);
+  const [weatherInfo, setWeatherInfo] = useState<OpenMeteoForecast | null>(null);
+  const [locationLabel, setLocationLabel] = useState('La Paz, Bolivia');
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [markerUpdateKey, setMarkerUpdateKey] = useState(0);
+
+  const weatherEmoji = (code: number) => {
+    const icons: Record<number, string> = {
+      0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+      45: '🌫️', 48: '🌫️', 51: '🌦️', 53: '🌧️', 55: '🌧️',
+      61: '🌧️', 63: '🌧️', 65: '🌧️', 71: '❄️', 73: '❄️',
+      75: '❄️', 77: '❄️', 80: '🌦️', 81: '🌧️', 82: '🌧️',
+      85: '❄️', 86: '❄️', 95: '⛈️', 96: '⛈️', 99: '⛈️'
+    };
+    return icons[code] ?? '🌡️';
+  };
+
+  const weatherDescription = (code: number) => {
+    const descriptions: Record<number, string> = {
+      0: 'Despejado', 1: 'Poco nublado', 2: 'Parcialmente nublado', 3: 'Nublado',
+      45: 'Niebla', 48: 'Bruma', 51: 'Llovizna ligera', 53: 'Lluvia ligera', 55: 'Lluvia moderada',
+      61: 'Lluvia', 63: 'Lluvia fuerte', 65: 'Lluvia intensa', 71: 'Nieve ligera',
+      73: 'Nieve moderada', 75: 'Nieve intensa', 77: 'Aguanieve', 80: 'Lluvias aisladas',
+      81: 'Lluvias frecuentes', 82: 'Lluvias fuertes', 85: 'Chubascos de nieve',
+      86: 'Tormenta de nieve', 95: 'Tormenta eléctrica', 96: 'Tormenta con granizo', 99: 'Tormenta severa'
+    };
+    return descriptions[code] ?? 'Condiciones variables';
+  };
+
+  const fetchWeather = async (lat: number, lng: number) => {
+    setStatus('loading');
+    setErrorMessage('');
+
+    try {
+      const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_mean,weathercode&timezone=auto&forecast_days=5`;
+      const response = await fetch(weatherUrl);
+      if (!response.ok) {
+        throw new Error(`API clima respondió con ${response.status}`);
+      }
+      const data = (await response.json()) as OpenMeteoForecast;
+      if (!data.current_weather || !data.daily) {
+        throw new Error('Respuesta incompleta del servicio meteorológico');
+      }
+      setWeatherInfo(data);
+
+      try {
+        const reverseUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+        const reverseResponse = await fetch(reverseUrl);
+        if (reverseResponse.ok) {
+          const reverseData = await reverseResponse.json();
+          const label = reverseData.address?.city || reverseData.address?.town || reverseData.address?.village || reverseData.display_name?.split(',')[0];
+          if (label) setLocationLabel(label);
+        }
+      } catch {
+        // Ignorar errores de geocodificación
+      }
+
+      setStatus('ready');
+    } catch (error: any) {
+      setStatus('error');
+      setErrorMessage(error?.message ?? 'No se pudo cargar el clima.');
+      setWeatherInfo(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather(position.lat, position.lng);
+  }, [position]);
+
+  const handleMapClick = (event: any) => {
+    const { lat, lng } = event.latlng;
+    setPosition({ lat, lng });
+    setMarkerUpdateKey((key) => key + 1);
+  };
+
+  const ForecastMarker = () => {
+    useMapEvents({ click: handleMapClick });
+    return null;
+  };
+
+  const current = weatherInfo?.current_weather;
+  const daily = weatherInfo?.daily;
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 animate-in fade-in">
-      <h2 className="text-3xl font-bold mb-8">Clima en La Paz y Alrededores</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-6 rounded-3xl text-white shadow-lg">
-          <h3 className="text-xl font-bold mb-4">La Paz - Centro</h3>
-          <div className="flex items-center justify-between">
-            <Icon name="partly_cloudy_day" className="text-6xl" />
-            <span className="text-5xl font-bold">12°C</span>
+    <div className="max-w-6xl mx-auto px-4 py-10 animate-in fade-in">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold">Clima Interactivo con Mapa</h2>
+        <p className="mt-2 text-gray-600 max-w-3xl">
+          Haz clic en cualquier lugar del mapa para consultar el clima y el pronóstico de los próximos días. Los datos se obtienen desde Open-Meteo y la ubicación se resuelve con OpenStreetMap.
+        </p>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+        <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-sm bg-white">
+          <MapContainer center={[position.lat, position.lng]} zoom={11} className="h-[440px] w-full" scrollWheelZoom={true}>
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker key={markerUpdateKey} position={[position.lat, position.lng]}>
+              <Popup>{locationLabel}</Popup>
+            </Marker>
+            <ForecastMarker />
+          </MapContainer>
+          <div className="p-5 border-t border-gray-100 bg-slate-50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-sm text-gray-500">Coordenadas seleccionadas</p>
+                <p className="font-semibold text-gray-900">{position.lat.toFixed(4)}, {position.lng.toFixed(4)}</p>
+              </div>
+              <p className="text-sm text-gray-600">Haz clic en el mapa para actualizar el clima</p>
+            </div>
           </div>
-          <p className="mt-4 opacity-80">Clima templado, parcialmente nublado</p>
-          <p className="text-sm mt-2 opacity-70">Altitud: 3,640 msnm</p>
         </div>
-        <div className="bg-gradient-to-br from-orange-400 to-red-500 p-6 rounded-3xl text-white shadow-lg">
-          <h3 className="text-xl font-bold mb-4">El Alto</h3>
-          <div className="flex items-center justify-between">
-            <Icon name="wb_sunny" className="text-6xl" />
-            <span className="text-5xl font-bold">10°C</span>
+
+        <div className="space-y-6">
+          <div className="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-700 text-white p-8 shadow-lg">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.24em] text-slate-300">Ubicación</p>
+                <h3 className="mt-2 text-2xl font-bold">{locationLabel}</h3>
+              </div>
+              <div className="text-5xl">{current ? weatherEmoji(current.weathercode) : '🌦️'}</div>
+            </div>
+
+            {status === 'loading' && (
+              <div className="mt-8 rounded-3xl bg-white/10 p-5 text-slate-100">
+                <p>Cargando clima...</p>
+              </div>
+            )}
+
+            {status === 'error' && (
+              <div className="mt-8 rounded-3xl bg-red-500/10 border border-red-400 p-5 text-red-900">
+                <p className="font-semibold">No se pudo cargar el clima</p>
+                <p className="mt-2 text-sm">{errorMessage}</p>
+              </div>
+            )}
+
+            {status === 'ready' && current && (
+              <div className="mt-8 grid gap-4">
+                <div className="rounded-3xl bg-white/10 p-5">
+                  <p className="text-sm text-slate-300">Condición</p>
+                  <p className="mt-2 text-2xl font-semibold">{weatherDescription(current.weathercode)}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-3xl bg-white/10 p-5">
+                    <p className="text-sm text-slate-300">Temperatura</p>
+                    <p className="mt-2 text-3xl font-semibold">{Math.round(current.temperature)}°C</p>
+                  </div>
+                  <div className="rounded-3xl bg-white/10 p-5">
+                    <p className="text-sm text-slate-300">Viento</p>
+                    <p className="mt-2 text-3xl font-semibold">{Math.round(current.windspeed)} km/h</p>
+                    <p className="text-sm text-slate-300">Dirección {Math.round(current.winddirection)}°</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <p className="mt-4 opacity-80">Más soleado que el centro</p>
-          <p className="text-sm mt-2 opacity-70">Altitud: 4,150 msnm</p>
-        </div>
-        <div className="bg-gradient-to-br from-green-500 to-teal-600 p-6 rounded-3xl text-white shadow-lg">
-          <h3 className="text-xl font-bold mb-4">Valle de la Luna</h3>
-          <div className="flex items-center justify-between">
-            <Icon name="air" className="text-6xl" />
-            <span className="text-5xl font-bold">8°C</span>
+
+          <div className="rounded-3xl bg-white p-6 shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <p className="text-sm text-gray-500 uppercase tracking-[0.24em]">Pronóstico</p>
+                <h3 className="text-2xl font-bold text-gray-900">Próximos días</h3>
+              </div>
+            </div>
+
+            {status === 'ready' && daily ? (
+              <div className="space-y-3">
+                {daily.time.map((day, index) => {
+                  const date = new Date(day);
+                  const dayName = date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+                  return (
+                    <div key={day} className="flex items-center justify-between rounded-3xl border border-slate-200 p-4">
+                      <div>
+                        <p className="font-semibold text-gray-900">{dayName}</p>
+                        <p className="text-sm text-gray-500">{weatherDescription(daily.weathercode[index])}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-slate-900">{Math.round(daily.temperature_2m_max[index])}° / <span className="text-slate-500">{Math.round(daily.temperature_2m_min[index])}°</span></p>
+                        <p className="text-sm text-slate-500">{daily.precipitation_probability_mean[index]}% lluvia</p>
+                      </div>
+                      <div className="text-2xl">{weatherEmoji(daily.weathercode[index])}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : status === 'loading' ? (
+              <p className="text-sm text-gray-500">Cargando pronóstico...</p>
+            ) : (
+              <p className="text-sm text-gray-500">Selecciona un punto en el mapa para ver el pronóstico.</p>
+            )}
           </div>
-          <p className="mt-4 opacity-80">Vientos moderados</p>
-          <p className="text-sm mt-2 opacity-70">Altitud: 3,300 msnm</p>
         </div>
       </div>
-      <div className="mt-8 bg-blue-50 p-6 rounded-2xl border border-blue-200">
-        <h3 className="text-lg font-bold text-blue-900 mb-2">Consejos para el Clima de La Paz</h3>
-        <ul className="text-blue-800 space-y-1">
-          <li>• Las temperaturas varían significativamente por altitud</li>
-          <li>• El sol es intenso a pesar del frío - usa protector solar</li>
-          <li>• Las lluvias son más frecuentes de diciembre a marzo</li>
-          <li>• Los vientos pueden ser fuertes en zonas elevadas</li>
+
+      <div className="mt-8 rounded-3xl bg-blue-50 border border-blue-100 p-6 text-blue-900">
+        <h3 className="text-xl font-bold mb-3">Consejos rápidos</h3>
+        <ul className="space-y-2 text-sm leading-6">
+          <li>• Usa capas ligeras y ropa por capas porque el clima puede cambiar rápido en La Paz.</li>
+          <li>• Consulta el mapa y el pronóstico antes de salir a zonas altas o rutas de aventura.</li>
+          <li>• El sol es intenso en altura aunque la temperatura sea fresca, protege tu piel.</li>
+          <li>• Si hay probabilidad de lluvia, lleva un impermeable ligero y calzado adecuado.</li>
         </ul>
       </div>
     </div>
@@ -1097,7 +1419,7 @@ function TuristaClima() {
 
 function TuristaAlertas() {
   const [notifications] = useState<Notification[]>(() => {
-    const saved = localStorage.getItem('bolivia360_notifications');
+    const saved = localStorage.getItem('chuquiago360_notifications');
     return saved ? JSON.parse(saved) as Notification[] : MOCK_NOTIFICATIONS;
   });
 
@@ -1282,7 +1604,7 @@ function AdminUsuarios({ users, setUsers }: { users: User[]; setUsers: React.Dis
   const exportUsers = () => {
     const dataStr = JSON.stringify(users, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const exportFileDefaultName = `usuarios_bolivia360_${new Date().toISOString().split('T')[0]}.json`;
+    const exportFileDefaultName = `usuarios_chuquiago360_${new Date().toISOString().split('T')[0]}.json`;
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
@@ -1296,12 +1618,12 @@ function AdminUsuarios({ users, setUsers }: { users: User[]; setUsers: React.Dis
   };
 
   const createWelcomeNotification = (user: User) => {
-    const saved = localStorage.getItem('bolivia360_notifications');
+    const saved = localStorage.getItem('chuquiago360_notifications');
     const notifications: Notification[] = saved ? JSON.parse(saved) as Notification[] : [];
     const maxId = notifications.length > 0 ? Math.max(...notifications.map(n => n.id)) : 0;
     const welcomeNotification: Notification = {
       id: maxId + 1,
-      title: `¡Bienvenido a Bolivia360, ${user.name}!`,
+      title: `¡Bienvenido a Chuquiago360, ${user.name}!`,
       message: `Tu cuenta ha sido creada exitosamente. Explora los mejores destinos turísticos de Bolivia.`,
       type: 'bienvenida',
       severity: 'baja',
@@ -1311,7 +1633,7 @@ function AdminUsuarios({ users, setUsers }: { users: User[]; setUsers: React.Dis
       isRead: false
     };
     notifications.push(welcomeNotification);
-    localStorage.setItem('bolivia360_notifications', JSON.stringify(notifications));
+    localStorage.setItem('chuquiago360_notifications', JSON.stringify(notifications));
   };
 
   return (
@@ -1502,7 +1824,7 @@ function UserForm({ user, onSave, onCancel }: {
 // --- Admin Notificaciones View ---
 function AdminNotificaciones() {
   const [notifications, setNotifications] = useState<Notification[]>(() => {
-    const saved = localStorage.getItem('bolivia360_notifications');
+    const saved = localStorage.getItem('chuquiago360_notifications');
     if (saved) {
       const parsed = JSON.parse(saved) as Notification[];
       return parsed.length > 0 ? parsed : MOCK_NOTIFICATIONS;
@@ -1516,7 +1838,7 @@ function AdminNotificaciones() {
   const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('bolivia360_notifications', JSON.stringify(notifications));
+    localStorage.setItem('chuquiago360_notifications', JSON.stringify(notifications));
   }, [notifications]);
 
   const filteredNotifications = notifications.filter(notification => {
@@ -1569,7 +1891,7 @@ function AdminNotificaciones() {
 
   const resetToMockNotifications = () => {
     if (window.confirm('¿Estás seguro de que deseas restaurar las notificaciones de prueba?')) {
-      localStorage.setItem('bolivia360_notifications', JSON.stringify(MOCK_NOTIFICATIONS));
+      localStorage.setItem('chuquiago360_notifications', JSON.stringify(MOCK_NOTIFICATIONS));
       setNotifications(MOCK_NOTIFICATIONS);
     }
   };
