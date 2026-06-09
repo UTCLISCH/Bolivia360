@@ -29,7 +29,7 @@ const INITIAL_REVIEWS = [
 ];
 
 const app = express();
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '6mb' }));
 app.use('/api', rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 300,
@@ -72,8 +72,12 @@ const sanitizeLugar = (lugar) => {
   const priceNum = Number(lugar.priceNum);
   const stock = Number(lugar.stock);
   const rating = Number(lugar.rating);
+  const hasDataImage = /^data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+$/.test(image);
+  const hasHttpImage = /^https?:\/\//i.test(image);
 
   if (!title || !desc || !duration || !image || !CATEGORIES.includes(category)) return null;
+  if (!hasDataImage && !hasHttpImage) return null;
+  if (image.length > 5_500_000) return null;
   if (!Number.isFinite(priceNum) || priceNum <= 0) return null;
   if (!Number.isInteger(stock) || stock < 0) return null;
   if (!Number.isFinite(rating) || rating < 0 || rating > 5) return null;

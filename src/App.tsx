@@ -28,6 +28,7 @@ interface Review {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const MAX_UPLOAD_IMAGE_SIZE = 2 * 1024 * 1024;
 
 async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -38,6 +39,13 @@ async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
+
+const fileToDataUrl = (file: File): Promise<string> => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(String(reader.result || ''));
+  reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+  reader.readAsDataURL(file);
+});
 
 // --- Helper Components ---
 const Icon = ({ name, className = "" }: { name: string; className?: string }) => (
@@ -1260,12 +1268,37 @@ function OperadorPublicar({ onSuccess, onAdd }: {
 }) {
   const [form, setForm] = useState({
     title: '', desc: '', priceNum: '', stock: '', category: 'Naturaleza' as Category,
-    duration: '', image: 'https://picsum.photos/seed/nuevo/800/600', rating: '0.0',
+    duration: '', image: '', rating: '0.0',
   });
+  const [imageError, setImageError] = useState('');
   const set = (key: string, val: string) => setForm(f => ({ ...f, [key]: val }));
+
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setImageError('Selecciona un archivo de imagen válido.');
+      return;
+    }
+    if (file.size > MAX_UPLOAD_IMAGE_SIZE) {
+      setImageError('La imagen debe pesar máximo 2MB.');
+      return;
+    }
+    try {
+      const imageData = await fileToDataUrl(file);
+      set('image', imageData);
+      setImageError('');
+    } catch {
+      setImageError('No se pudo procesar la imagen.');
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.image.startsWith('data:image/')) {
+      setImageError('Debes subir una imagen antes de publicar.');
+      return;
+    }
     onAdd({
       title: form.title, desc: form.desc, price: `$${form.priceNum}`,
       priceNum: Number(form.priceNum), stock: Number(form.stock),
@@ -1318,9 +1351,14 @@ function OperadorPublicar({ onSuccess, onAdd }: {
           </div>
         </div>
         <div>
-          <label className="block font-semibold mb-2">URL de imagen</label>
-          <input type="url" value={form.image} onChange={e => set('image', e.target.value)}
-            className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#2D6A4F] outline-none" />
+          <label className="block font-semibold mb-2">Imagen del lugar <span className="text-red-500">*</span></label>
+          <input type="file" accept="image/*" required onChange={(e) => { void handleImageChange(e); }}
+            className="w-full p-3 border rounded-xl bg-gray-50 focus:ring-2 focus:ring-[#2D6A4F] outline-none file:mr-3 file:rounded-lg file:border-0 file:bg-[#2D6A4F] file:px-4 file:py-2 file:text-white hover:file:bg-[#1f4a37]" />
+          <p className="text-xs text-gray-500 mt-2">Se guarda en la base de datos. Tamaño máximo: 2MB.</p>
+          {imageError && <p className="text-sm text-red-600 mt-2">{imageError}</p>}
+          {form.image && (
+            <img src={form.image} alt="Vista previa" className="mt-4 w-full max-h-64 rounded-xl object-cover border border-gray-200" />
+          )}
         </div>
         <button type="submit" className="w-full py-4 bg-[#2D6A4F] text-white font-bold rounded-xl hover:bg-[#1f4a37] flex justify-center items-center gap-2 transition-colors shadow-md">
           <Icon name="publish" /> Publicar en Inventario
