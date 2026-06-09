@@ -21,7 +21,7 @@ export default defineConfig(({mode}) => {
       hmr: process.env.DISABLE_HMR !== 'true',
       proxy: {
         '/api': {
-          target: env.VITE_API_PROXY_TARGET || 'http://localhost:4000',
+          target: env.VITE_API_PROXY_TARGET || `http://localhost:${env.API_PORT || '3001'}`,
           changeOrigin: true,
         },
       },

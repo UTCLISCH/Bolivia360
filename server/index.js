@@ -5,7 +5,7 @@ import { MongoClient } from 'mongodb';
 
 dotenv.config();
 
-const PORT = Number(process.env.PORT || 4000);
+const PORT = Number(process.env.API_PORT || 3001);
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const MONGODB_DB = process.env.MONGODB_DB || 'chuquiago360';
 const CATEGORIES = ['Aventura', 'Cultural', 'Naturaleza', 'Gastronómica'];
