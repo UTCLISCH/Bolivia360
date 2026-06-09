@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import { MongoClient } from 'mongodb';
 
 dotenv.config();
@@ -29,6 +30,12 @@ const INITIAL_REVIEWS = [
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
+app.use('/api', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+}));
 
 const mongoClient = new MongoClient(MONGODB_URI);
 await mongoClient.connect();
