@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // --- Types ---
 type ViewState = 'landing' | 'login' | 'register' | 'app';
@@ -27,6 +27,18 @@ interface Review {
   date: string;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+
+async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...(options?.headers || {}) },
+    ...options,
+  });
+  if (!response.ok) throw new Error(`Error ${response.status}`);
+  if (response.status === 204) return undefined as T;
+  return response.json() as Promise<T>;
+}
+
 // --- Helper Components ---
 const Icon = ({ name, className = "" }: { name: string; className?: string }) => (
   <span className={`material-symbols-outlined ${className}`}>{name}</span>
@@ -37,7 +49,9 @@ const StarRating = ({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md
   return (
     <span className="inline-flex items-center gap-0.5">
       {Array.from({ length: 5 }, (_, i) => (
-        <Icon key={i} name={i < Math.round(rating) ? 'star' : 'star_border'} className={`${sz} ${i < Math.round(rating) ? 'text-yellow-400' : 'text-gray-300'}`} />
+        <React.Fragment key={i}>
+          <Icon name={i < Math.round(rating) ? 'star' : 'star_border'} className={`${sz} ${i < Math.round(rating) ? 'text-yellow-400' : 'text-gray-300'}`} />
+        </React.Fragment>
       ))}
     </span>
   );
@@ -117,6 +131,22 @@ export default function App() {
   const [lugares, setLugares] = useState<Lugar[]>(INITIAL_LUGARES);
   const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
 
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [dbLugares, dbReviews] = await Promise.all([
+          apiRequest<Lugar[]>('/lugares'),
+          apiRequest<Review[]>('/reviews'),
+        ]);
+        setLugares(dbLugares);
+        setReviews(dbReviews);
+      } catch (error) {
+        console.error('No se pudieron cargar datos desde MongoDB:', error);
+      }
+    };
+    void loadData();
+  }, []);
+
   const navigateTo = (view: ViewState) => { setCurrentView(view); window.scrollTo(0, 0); };
   const handleLogin = (selectedRole: Role) => { setRole(selectedRole); navigateTo('app'); };
 
@@ -146,7 +176,7 @@ function LandingView({ onNavigate }: { onNavigate: (v: ViewState) => void }) {
       <header className="flex items-center justify-between p-6 bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center gap-2 text-[#0077B6] font-bold text-2xl tracking-tight">
           <Icon name="travel_explore" className="text-3xl" />
-          <span>Bolivia360</span>
+          <span>Chuquiago360</span>
         </div>
         <div className="flex gap-3">
           <button onClick={() => onNavigate('login')} className="px-5 py-2.5 text-[#0077B6] font-medium hover:bg-blue-50 rounded-full transition-colors">
@@ -190,7 +220,7 @@ function RegisterView({ onNavigate, onLogin }: { onNavigate: (v: ViewState) => v
         <div className="p-10">
           <div className="flex justify-center mb-8 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="flex items-center gap-2 text-[#2D6A4F] font-bold text-4xl tracking-tight">
-              <Icon name="travel_explore" className="text-5xl" /><span>Bolivia360</span>
+              <Icon name="travel_explore" className="text-5xl" /><span>Chuquiago360</span>
             </div>
           </div>
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Crear una cuenta</h2>
@@ -243,7 +273,7 @@ function LoginView({ onNavigate, onLogin }: { onNavigate: (v: ViewState) => void
         <div className="p-10">
           <div className="flex justify-center mb-8 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="flex items-center gap-2 text-[#0077B6] font-bold text-4xl tracking-tight">
-              <Icon name="travel_explore" className="text-5xl" /><span>Bolivia360</span>
+              <Icon name="travel_explore" className="text-5xl" /><span>Chuquiago360</span>
             </div>
           </div>
           <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">Iniciar Sesión</h2>
@@ -305,31 +335,80 @@ function MainAppView({ role, lugares, setLugares, reviews, setReviews, onLogout 
     setActiveTab('detalle_destino');
   };
 
-  const handleReserve = (lugarId: number, quantity: number) => {
-    setLugares(prev => prev.map(l => l.id === lugarId ? { ...l, stock: l.stock - quantity } : l));
-    setSelectedItem(prev => prev && prev.id === lugarId ? { ...prev, stock: prev.stock - quantity } : prev);
+  const handleReserve = async (lugarId: number, quantity: number, date: string) => {
+    try {
+      const result = await apiRequest<{ lugar: Lugar }>('/reservas', {
+        method: 'POST',
+        body: JSON.stringify({ lugarId, quantity, date }),
+      });
+      setLugares(prev => prev.map(l => l.id === lugarId ? result.lugar : l));
+      setSelectedItem(prev => prev && prev.id === lugarId ? result.lugar : prev);
+      return true;
+    } catch (error) {
+      console.error('No se pudo registrar la reserva:', error);
+      return false;
+    }
   };
 
-  const handleAddLugar = (lugar: Omit<Lugar, 'id'>) => {
-    setLugares(prev => [...prev, { ...lugar, id: Date.now() }]);
+  const handleAddLugar = async (lugar: Omit<Lugar, 'id'>) => {
+    try {
+      const created = await apiRequest<Lugar>('/lugares', {
+        method: 'POST',
+        body: JSON.stringify(lugar),
+      });
+      setLugares(prev => [...prev, created]);
+    } catch (error) {
+      console.error('No se pudo crear el lugar:', error);
+    }
   };
 
-  const handleUpdateLugar = (updated: Lugar) => {
-    setLugares(prev => prev.map(l => l.id === updated.id ? updated : l));
-    if (selectedItem?.id === updated.id) setSelectedItem(updated);
+  const handleUpdateLugar = async (updated: Lugar) => {
+    try {
+      const saved = await apiRequest<Lugar>(`/lugares/${updated.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(updated),
+      });
+      setLugares(prev => prev.map(l => l.id === saved.id ? saved : l));
+      if (selectedItem?.id === saved.id) setSelectedItem(saved);
+    } catch (error) {
+      console.error('No se pudo actualizar el lugar:', error);
+    }
     setEditingLugar(null);
   };
 
-  const handleDeleteLugar = (id: number) => {
-    setLugares(prev => prev.filter(l => l.id !== id));
+  const handleDeleteLugar = async (id: number) => {
+    try {
+      await apiRequest<void>(`/lugares/${id}`, { method: 'DELETE' });
+      setLugares(prev => prev.filter(l => l.id !== id));
+      setReviews(prev => prev.filter(r => r.lugarId !== id));
+    } catch (error) {
+      console.error('No se pudo eliminar el lugar:', error);
+    }
   };
 
-  const handleUpdateStock = (id: number, stock: number) => {
-    setLugares(prev => prev.map(l => l.id === id ? { ...l, stock } : l));
+  const handleUpdateStock = async (id: number, stock: number) => {
+    try {
+      const saved = await apiRequest<Lugar>(`/lugares/${id}/stock`, {
+        method: 'PATCH',
+        body: JSON.stringify({ stock }),
+      });
+      setLugares(prev => prev.map(l => l.id === saved.id ? saved : l));
+      if (selectedItem?.id === saved.id) setSelectedItem(saved);
+    } catch (error) {
+      console.error('No se pudo actualizar el stock:', error);
+    }
   };
 
-  const handleAddReview = (review: Omit<Review, 'id'>) => {
-    setReviews(prev => [{ ...review, id: Date.now() }, ...prev]);
+  const handleAddReview = async (review: Omit<Review, 'id'>) => {
+    try {
+      const saved = await apiRequest<Review>('/reviews', {
+        method: 'POST',
+        body: JSON.stringify(review),
+      });
+      setReviews(prev => [saved, ...prev]);
+    } catch (error) {
+      console.error('No se pudo registrar la reseña:', error);
+    }
   };
 
   const renderContent = () => {
@@ -343,7 +422,7 @@ function MainAppView({ role, lugares, setLugares, reviews, setReviews, onLogout 
           role={role}
           onBack={() => setActiveTab('inicio')}
           onReserve={handleReserve}
-          onAddReview={handleAddReview}
+          onAddReview={(review) => { void handleAddReview(review); }}
         />
       );
     }
@@ -362,11 +441,11 @@ function MainAppView({ role, lugares, setLugares, reviews, setReviews, onLogout 
           <OperadorInventario
             lugares={lugares}
             onEdit={setEditingLugar}
-            onDelete={handleDeleteLugar}
-            onUpdateStock={handleUpdateStock}
+            onDelete={(id) => { void handleDeleteLugar(id); }}
+            onUpdateStock={(id, stock) => { void handleUpdateStock(id, stock); }}
           />
         );
-        case 'publicar':   return <OperadorPublicar onSuccess={() => setActiveTab('inventario')} onAdd={handleAddLugar} />;
+        case 'publicar':   return <OperadorPublicar onSuccess={() => setActiveTab('inventario')} onAdd={(lugar) => { void handleAddLugar(lugar); }} />;
       }
     } else if (role === 'administrador') {
       switch (activeTab) {
@@ -385,7 +464,7 @@ function MainAppView({ role, lugares, setLugares, reviews, setReviews, onLogout 
           <div className="flex justify-between items-center h-16 border-b border-gray-100">
             <div className="flex items-center gap-2 text-[#0077B6] font-bold text-2xl">
               <Icon name="travel_explore" className="text-3xl" />
-              <span className="hidden sm:block">Bolivia360</span>
+              <span className="hidden sm:block">Chuquiago360</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="hidden md:block text-sm font-bold text-[#2D6A4F] uppercase bg-green-50 px-3 py-1 rounded-full">{role}</span>
@@ -433,7 +512,7 @@ function PerfilView() {
           </div>
           <div>
             <h3 className="text-2xl font-bold">Usuario de Prueba</h3>
-            <p className="text-gray-500">usuario@bolivia360.com</p>
+            <p className="text-gray-500">usuario@chuquiago360.com</p>
           </div>
         </div>
         <div className="space-y-4">
@@ -460,15 +539,16 @@ function DestinoDetalleView({ destino, reviews, role, onBack, onReserve, onAddRe
   reviews: Review[];
   role: Role;
   onBack: () => void;
-  onReserve: (lugarId: number, quantity: number) => void;
+  onReserve: (lugarId: number, quantity: number, date: string) => Promise<boolean>;
   onAddReview: (r: Omit<Review, 'id'>) => void;
 }) {
   const [showReserva, setShowReserva] = useState(false);
   const [reservaSuccess, setReservaSuccess] = useState(false);
   const avgRating = reviews.length ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : 0;
 
-  const handleReservaConfirm = (quantity: number) => {
-    onReserve(destino.id, quantity);
+  const handleReservaConfirm = async (quantity: number, date: string) => {
+    const saved = await onReserve(destino.id, quantity, date);
+    if (!saved) return;
     setShowReserva(false);
     setReservaSuccess(true);
     setTimeout(() => setReservaSuccess(false), 4000);
@@ -563,7 +643,7 @@ function DestinoDetalleView({ destino, reviews, role, onBack, onReserve, onAddRe
 // --- Reserva Modal ---
 function ReservaModal({ destino, onConfirm, onClose }: {
   destino: Lugar;
-  onConfirm: (quantity: number) => void;
+  onConfirm: (quantity: number, date: string) => void | Promise<void>;
   onClose: () => void;
 }) {
   const today = new Date().toISOString().split('T')[0];
@@ -613,7 +693,7 @@ function ReservaModal({ destino, onConfirm, onClose }: {
             <span className="text-gray-600 font-medium flex items-center gap-2"><Icon name="receipt_long" className="text-gray-400" /> Total estimado</span>
             <span className="text-2xl font-extrabold text-[#2D6A4F]">${destino.priceNum * quantity}</span>
           </div>
-          <button onClick={() => { if (date) onConfirm(quantity); }} disabled={!date}
+          <button onClick={() => { if (date) onConfirm(quantity, date); }} disabled={!date}
             className="w-full py-4 bg-[#0077B6] text-white font-bold rounded-xl hover:bg-[#005f92] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md">
             <Icon name="check_circle" /> Confirmar Reserva
           </button>
@@ -1278,7 +1358,7 @@ function AdminUsuarios() {
   const [users, setUsers] = useState([
     { id: 1, name: 'Juan Perez',      email: 'juan@test.com',        role: 'Turista' },
     { id: 2, name: 'Agencia Andes',   email: 'contacto@andes.com',   role: 'Operador' },
-    { id: 3, name: 'Admin Principal', email: 'admin@bolivia360.com', role: 'Administrador' },
+    { id: 3, name: 'Admin Principal', email: 'admin@chuquiago360.com', role: 'Administrador' },
   ]);
   const toggleRole = (id: number) => {
     setUsers(users.map(u => {
