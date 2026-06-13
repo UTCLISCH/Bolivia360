@@ -14,3 +14,59 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+  
+  input, select, textarea, button {
+    font-size: 16px !important;
+  }
+}
+
+/* Ensure touch targets are at least 44x44px on mobile */
+@media (max-width: 768px) {
+  button, a, input[type="checkbox"], input[type="radio"] {
+    min-height: 44px;
+  }
+}
+
+/* Improve table responsiveness */
+@media (max-width: 640px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  table tbody, table thead {
+    display: block;
+  }
+}
+
+/* Fix overflow issues in small screens */
+body {
+  overflow-x: hidden;
+}
+
+/* Optimize images for mobile */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Improve form inputs on mobile */
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  appearance: auto;
+}
